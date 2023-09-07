@@ -1,28 +1,3 @@
 {
-  "holidays": [
-    {
-      "isProvisional": false,
-      "isSpecialWorkingHours": false,
-      "teamMemberId": 4,
-      "teamId": 1,
-      "day": 1688594400000,
-      "id": 1688372764683
-    },
-    {
-      "isProvisional": false,
-      "isSpecialWorkingHours": false,
-      "teamMemberId": 4,
-      "teamId": 1,
-      "day": 1689199200000,
-      "id": 1688372779843
-    },
-    {
-      "isProvisional": true,
-      "isSpecialWorkingHours": false,
-      "teamMemberId": 5,
-      "teamId": 1,
-      "day": 1689199200000,
-      "id": 1688373132351
-    }
-  ]
+  "holidays": []
 }

@@ -64,8 +64,13 @@ To debug it you need to:
 - run local
 - and then press F5 or the green arrow in VS Code to launch the debugger and open a new browser instance
 
+## PM2
+debería de haber un proceso arrancado con pm2 llamado **teamholidays_pm2** se puede mirar ejecutando `pm2 list`.
+Si no es así hay que meterse dentro de la root del proyecto y ejectuar `pm2 start .\teamholidays_pm2.js`
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+

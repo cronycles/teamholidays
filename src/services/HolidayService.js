@@ -1,7 +1,7 @@
 import { HttpHelper } from "../helpers/http.helper";
 
 const HolidayService = () => {
-    const url = "http://localhost:4000/holidays";
+    const url = "https://holidaysservice.ekasa.local/holidays";
     const api = HttpHelper();
 
     const getHolidays = async () => {
