@@ -79,7 +79,7 @@ export default function ContextWrapper(props) {
                 case "reload":
                 default:
                     let allHolidays = callAction.payload;
-                    if (allHolidays) {
+                    if (allHolidays && allHolidays.length > 0) {
                         allHolidays = allHolidays.filter(holiday => holiday.teamId == selectedTeamId);
                     }
                     return setSavedEvents(allHolidays);
