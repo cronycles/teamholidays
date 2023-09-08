@@ -23,5 +23,5 @@ module.exports = {
     isFridayAlwayIntensive: true,
     summerIntensiveDaysStartDate: "2023/06/26",
     summerIntensiveDaysEndDate: "2023/09/08",
-    otherIntensiveDays: ["2023/12/26", "2023/12/27", "2023/12/28"],
+    otherIntensiveDays: ["2023/04/05", "2023/12/26", "2023/12/27", "2023/12/28"],
 };
