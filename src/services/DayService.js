@@ -36,14 +36,8 @@ const DayService = (calendarConfig) => {
 
     function getStringDateFromMillisecondEpochDate(dateInMilliseconds) {
         const date = new Date(dateInMilliseconds);
-        const year = date.getFullYear();
-
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-
-        const day = String(date.getDate()).padStart(2, "0");
-
-        const joined = [year, month, day].join("/");
-        return joined;
+        const outcome =  date.getFullYear() + '/' + ('0' + (date.getMonth()+1)).slice(-2) + '/' + ('0' + date.getDate()).slice(-2);
+        return outcome;
     }
 
     function isDateFriday(stringDate) {
