@@ -6,9 +6,6 @@ export default function EventModal() {
     const [cookies, setCookie] = useCookies(["hcdu"]);
     const { setShowEventModal, daySelected, dispatchCalEvent, selectedEvent, teamMembers } = useContext(GlobalContext);
     const [isProvisional, setIsProvisional] = useState(selectedEvent ? selectedEvent.isProvisional : false);
-    const [isSpecialWorkingHours, setIsSpecialWorkingHours] = useState(
-        selectedEvent ? selectedEvent.isSpecialWorkingHours : false
-    );
     const [selectedTeamMember, setSelectedTeamMember] = useState(() => {
         if (selectedEvent) {
             return teamMembers.find(tm => tm.id === selectedEvent.teamMemberId);
@@ -20,6 +17,17 @@ export default function EventModal() {
             }
         }
     });
+    const [isSpecialWorkingHours, setIsSpecialWorkingHours] = useState(() => {
+        let outcome = false;
+        if(selectedEvent) {
+            outcome = selectedEvent.isSpecialWorkingHours;
+        }
+        else if(selectedTeamMember.hasDefaultSpecialWorkingHours) {
+            outcome = true;
+        }
+        return outcome;
+    });
+    const [specialWorkingHours, setSpecialWorkingHours] = useState(selectedTeamMember.specialWorkingHours);
 
     useEffect(() => {
         const handleKeydown = e => {
@@ -97,6 +105,7 @@ export default function EventModal() {
             setIsSpecialWorkingHours(false);
             document.getElementById("isSpecialWorkingHours").checked = false;
         }
+        setSpecialWorkingHours(teamMember.specialWorkingHours);
     }
     return (
         <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center">
@@ -165,7 +174,7 @@ export default function EventModal() {
                                 onChange={e => setIsSpecialWorkingHours(e.target.checked)}
                                 required
                             />
-                            <label htmlFor="isSpecialWorkingHours"> Has special working hours</label>
+                            <label htmlFor="isSpecialWorkingHours"> Has special working hours ({specialWorkingHours})</label>
                         </div>
                     </div>
                 </div>

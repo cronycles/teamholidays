@@ -8,7 +8,7 @@ const TeamMemberService = (calendarConfig, teamsConfig, passedEvents) => {
             teamMemberObject.color = teamMember.color;
             teamMemberObject.id = teamMember.id;
             teamMemberObject.hasDefaultSpecialWorkingHours = teamMember.hasDefaultSpecialWorkingHours;
-            teamMemberObject.specialWorkingHours = teamMember.specialWorkingHours;
+            teamMemberObject.specialWorkingHours = teamMember.specialWorkingHours ?? calendarConfig.reducedDayInHours;
             teamMemberObject.teamId = getTeamIdByTeamMember(teamMember);
             teamMemberObject.checked = teamMember.checked;
             teamMemberObject.totalAvailableHours =
