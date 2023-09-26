@@ -14,13 +14,12 @@ const TeamMemberService = (calendarConfig, teamsConfig, passedEvents) => {
             teamMemberObject.totalAvailableHours =
                 teamMember.pastYearAvailableHours + calendarConfig.totalAvailableHours;
             teamMemberObject.spentHours = getSpentHoursByTeamMember(teamMember);
-            teamMemberObject.spentDays = teamMemberObject.spentHours / calendarConfig.fullDayInHours;
+            teamMemberObject.spentDays = getSpentDaysByTeamMember(teamMember);
             teamMemberObject.hoursLeft = teamMemberObject.totalAvailableHours - teamMemberObject.spentHours;
             teamMemberObject.daysLeft = teamMemberObject.hoursLeft / calendarConfig.fullDayInHours;
 
             teamMemberObject.totalAvailableHours = teamMemberObject.totalAvailableHours.toFixed(2);
             teamMemberObject.spentHours = teamMemberObject.spentHours.toFixed(2);
-            teamMemberObject.spentDays = teamMemberObject.spentDays.toFixed(2);
             teamMemberObject.hoursLeft = teamMemberObject.hoursLeft.toFixed(2);
             teamMemberObject.daysLeft = teamMemberObject.daysLeft.toFixed(2);
         }
@@ -37,6 +36,16 @@ const TeamMemberService = (calendarConfig, teamsConfig, passedEvents) => {
             }
         }
 
+        return outcome;
+    }
+
+    function getSpentDaysByTeamMember(teamMember) {
+        let outcome = 0;
+        if (teamMember) {
+            const teamMemberId = teamMember.id;
+            const teamMemberEvents = getFilteredEventsByTeamMemberId(teamMemberId);
+            outcome = teamMemberEvents.length;
+        }
         return outcome;
     }
 
