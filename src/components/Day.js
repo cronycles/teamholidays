@@ -11,8 +11,8 @@ export default function Day({ day, rowIdx }) {
 
     useEffect(() => {
         if (savedEvents && savedEvents.length > 0) {
-            const events = savedEvents.filter(evt => dayjs(evt.day).format("DD-MM-YY") === day.format("DD-MM-YY"));
-            let eventsOfCheckedTeamMember = getOnlyEventsWithCheckedTeamMember(events);
+            const eventsOfTheDay = savedEvents.filter(evt => dayjs(evt.day).format("DD-MM-YY") === day.format("DD-MM-YY"));
+            let eventsOfCheckedTeamMember = getOnlyEventsWithCheckedTeamMember(eventsOfTheDay);
             if (eventsOfCheckedTeamMember && eventsOfCheckedTeamMember.length > 0) {
                 setDayEvents(eventsOfCheckedTeamMember);
             } else {

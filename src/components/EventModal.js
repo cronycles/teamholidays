@@ -1,43 +1,74 @@
+import dayjs from "dayjs";
 import React, { useContext, useEffect, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
 import { useCookies } from "react-cookie";
 
 export default function EventModal() {
     const [cookies, setCookie] = useCookies(["hcdu"]);
-    const { setShowEventModal, daySelected, dispatchCalEvent, selectedEvent, teamMembers } = useContext(GlobalContext);
+    const { setShowEventModal, daySelected, dispatchCalEvent, selectedEvent, savedEvents, teamMembers } = useContext(GlobalContext);
     const [isProvisional, setIsProvisional] = useState(selectedEvent ? selectedEvent.isProvisional : false);
-    const [selectedTeamMember, setSelectedTeamMember] = useState(() => {
-        if (selectedEvent) {
-            return teamMembers.find(tm => tm.id === selectedEvent.teamMemberId);
-        } else {
-            if (cookies.hcdu && cookies.hcdu > 0) {
-                return teamMembers.find(tm => tm.id == cookies.hcdu);
-            } else {
-                return teamMembers[0];
+    const [availableTeamMembers, setAvailableTeamMembers] = useState(() => {
+        let outcome = [];
+        let teamMemberIdsOfTheDay = getTeamMemberIdListOfTheDay();
+        for (const teamMember of teamMembers) {
+            if(selectedEvent && selectedEvent.teamMemberId == teamMember.id) {
+                outcome.push(teamMember);
+            }
+            else if (!teamMemberIdsOfTheDay.includes(teamMember.id)) {
+                outcome.push(teamMember);
             }
         }
+        return outcome;
     });
+    const [selectedTeamMember, setSelectedTeamMember] = useState(() => {
+        let outcome = null;
+        if (selectedEvent) {
+            outcome = availableTeamMembers.find(tm => tm.id === selectedEvent.teamMemberId);
+        } else if (cookies.hcdu && cookies.hcdu > 0) {
+            outcome = availableTeamMembers.find(tm => tm.id == cookies.hcdu);
+        }
+        return outcome ?? availableTeamMembers?.[0] ?? null;
+    });
+    const [isSubmitDisabled, setIsSubmitdisabled] = useState(availableTeamMembers == 0);
+
     const [isSpecialWorkingHours, setIsSpecialWorkingHours] = useState(() => {
         let outcome = false;
-        if(selectedEvent) {
+        if (selectedEvent) {
             outcome = selectedEvent.isSpecialWorkingHours;
-        }
-        else if(selectedTeamMember.hasDefaultSpecialWorkingHours) {
+        } else if (selectedTeamMember?.hasDefaultSpecialWorkingHours) {
             outcome = true;
         }
         return outcome;
     });
-    const [specialWorkingHours, setSpecialWorkingHours] = useState(selectedTeamMember.specialWorkingHours);
+    const [specialWorkingHours, setSpecialWorkingHours] = useState(selectedTeamMember?.specialWorkingHours);
 
     useEffect(() => {
+        setKeyboardShortcuts();
+    }, []);
+
+    function getTeamMemberIdListOfTheDay() {
+        let outcome = [];
+        if (savedEvents && savedEvents.length > 0) {
+            const eventsOfTheDay = savedEvents.filter(evt => dayjs(evt.day).format("DD-MM-YY") === daySelected.format("DD-MM-YY"));
+            for (const eventOfTheDay of eventsOfTheDay) {
+                const teamMemberId = eventOfTheDay.teamMemberId;
+                if (!outcome.includes(teamMemberId)) {
+                    outcome.push(teamMemberId);
+                }
+            }
+        }
+
+        return outcome;
+    }
+
+    function setKeyboardShortcuts() {
         const handleKeydown = e => {
             switch (e.key) {
                 case "Escape":
                     setShowEventModal(false);
                     break;
                 case "Enter":
-                    executeSubmit();
-                    setShowEventModal(false);
+                    handleSubmitClick();
                     break;
                 case "Delete":
                     if (selectedEvent) {
@@ -55,7 +86,7 @@ export default function EventModal() {
         };
         window.addEventListener("keydown", handleKeydown);
         return () => window.removeEventListener("keydown", handleKeydown);
-    }, []);
+    }
 
     function handleCloseClick() {
         setShowEventModal(false);
@@ -68,9 +99,11 @@ export default function EventModal() {
     }
 
     function handleSubmitClick(e) {
-        e.preventDefault();
-        executeSubmit();
-        setShowEventModal(false);
+        e?.preventDefault();
+        if(!isSubmitDisabled) {
+            executeSubmit();
+            setShowEventModal(false);
+        }
     }
 
     function handleDeleteClick() {
@@ -114,10 +147,7 @@ export default function EventModal() {
                     <span className="material-icons-outlined text-gray-400">drag_handle</span>
                     <div>
                         {selectedEvent && (
-                            <span
-                                onClick={handleDeleteClick}
-                                className="material-icons-outlined text-gray-400 cursor-pointer"
-                            >
+                            <span onClick={handleDeleteClick} className="material-icons-outlined text-gray-400 cursor-pointer">
                                 delete
                             </span>
                         )}
@@ -131,7 +161,7 @@ export default function EventModal() {
                         <span className="material-icons-outlined text-gray-400">people</span>
 
                         <div className="flex gap-x-2">
-                            {teamMembers.map((teamMember, i) => (
+                            {availableTeamMembers.map((teamMember, i) => (
                                 <span
                                     key={i}
                                     onClick={() => handleTeamMemberClick(teamMember)}
@@ -143,9 +173,7 @@ export default function EventModal() {
                                     }}
                                     className={`rounded-full flex items-center justify-center cursor-pointer`}
                                 >
-                                    {selectedTeamMember.name === teamMember.name && (
-                                        <span className="material-icons-outlined text-white text-sm">check</span>
-                                    )}
+                                    {selectedTeamMember.name === teamMember.name && <span className="material-icons-outlined text-white text-sm">check</span>}
                                     {teamMember.name}
                                 </span>
                             ))}
@@ -179,11 +207,9 @@ export default function EventModal() {
                     </div>
                 </div>
                 <footer className="flex justify-end border-t p-3 mt-5">
-                    <button
-                        type="submit"
-                        onClick={handleSubmitClick}
-                        className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded text-white"
-                    >
+                    <button type="submit" disabled={isSubmitDisabled} onClick={handleSubmitClick} className={
+                        isSubmitDisabled ? "bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded text-white opacity-50 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded text-white"
+                        }>
                         Save
                     </button>
                 </footer>
